@@ -32,7 +32,7 @@ func HttpErrorRender(err error, w http.ResponseWriter, resource string) {
 		statusCode = http.StatusBadRequest
 	case ErrForbidden:
 		statusCode = http.StatusForbidden
-	case ErrAlreadyExist:
+	case ErrConflict:
 		statusCode = http.StatusConflict
 	case ErrUnknown:
 		statusCode = http.StatusInternalServerError
