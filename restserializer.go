@@ -2,10 +2,11 @@ package restserializer
 
 import (
 	"encoding/json"
+	"github.com/pkg/errors"
 	"net/http"
 )
 
-type Serializer interface {
+type ErrorSerializer interface {
 	RenderError(err error, w http.ResponseWriter, statusCode int)
 	WriteContentType(w http.ResponseWriter)
 }
@@ -19,6 +20,25 @@ type Error struct {
 	Message    string `json:"message"`
 	StatusCode int    `json:"statusCode"`
 	Status     string `json:"status"`
+}
+
+func HttpErrorRender(err error, w http.ResponseWriter, resource string) {
+	var statusCode int
+
+	switch errors.Cause(err) {
+	case ErrNotFound:
+		statusCode = http.StatusNotFound
+	case ErrBadRequest:
+		statusCode = http.StatusBadRequest
+	case ErrForbidden:
+		statusCode = http.StatusForbidden
+	case ErrAlreadyExist:
+		statusCode = http.StatusConflict
+	case ErrUnknown:
+		statusCode = http.StatusInternalServerError
+	}
+
+	RenderError(err, w, statusCode, resource)
 }
 
 func RenderError(err error, w http.ResponseWriter, statusCode int, resource string) {
