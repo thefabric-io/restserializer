@@ -36,6 +36,8 @@ func HttpErrorRender(err error, w http.ResponseWriter, resource string) {
 		statusCode = http.StatusConflict
 	case ErrUnknown:
 		statusCode = http.StatusInternalServerError
+	default:
+		statusCode = http.StatusInternalServerError
 	}
 
 	RenderError(err, w, statusCode, resource)
