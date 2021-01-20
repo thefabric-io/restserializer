@@ -2,6 +2,7 @@ package restserializer
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/pkg/errors"
 	"net/http"
 )
@@ -52,7 +53,12 @@ func RenderError(err error, w http.ResponseWriter, statusCode int, resource stri
 	encoder := json.NewEncoder(w)
 	err = encoder.Encode(&restErr)
 	if err != nil {
-		RenderError(err, w, http.StatusInternalServerError, resource)
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(
+			fmt.Sprintf(`{"error":{"resource":"%s","message":Internal Server Error","statusCode":%d,"status":"%s"}}`,
+				resource,
+				http.StatusInternalServerError,
+				http.StatusText(http.StatusInternalServerError))))
 		return
 	}
 	return
